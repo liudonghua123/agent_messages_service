@@ -259,17 +259,18 @@ async def delete_chats(
 # Include API router
 app.include_router(api_router)
 
-# Mount MCP app
-app.mount("/", mcp_app)
 
-# Serve static files (frontend)
+# Mount MCP app
+app.mount("/ai", mcp_app)
+
+# Serve static files (frontend) at /static
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(static_dir):
-    app.mount("/", StaticFiles(directory=static_dir), name="static")
-    
     @app.get("/")
     async def serve_frontend():
         return FileResponse(os.path.join(static_dir, "index.html"))
+    app.mount("/", StaticFiles(directory=static_dir), name="static")
+
 
 if __name__ == "__main__":
     import uvicorn
