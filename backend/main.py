@@ -1,6 +1,7 @@
 import os
 import time
 import re
+import pytz
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, Depends, HTTPException, Query, APIRouter, Request
@@ -62,7 +63,7 @@ def parse_special_datetime_filter(value: str) -> datetime:
     amount = int(match.group(1))
     unit = match.group(2)
     
-    now = datetime.now()
+    now = datetime.now(pytz.timezone("Asia/Shanghai"))
     if unit == 'minutes':
         return now - timedelta(minutes=amount)
     elif unit == 'hours':
@@ -135,7 +136,7 @@ def apply_filter_to_query(query, field: str, filter_conditions: List[Dict], db_m
             else:
                 # Try to parse as ISO datetime
                 try:
-                    value = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                    value = datetime.fromisoformat(value.replace('Z', '+08:00'))
                 except ValueError:
                     raise HTTPException(status_code=400, detail=f"Invalid datetime format: {value}")
         
@@ -149,10 +150,10 @@ def apply_filter_to_query(query, field: str, filter_conditions: List[Dict], db_m
                     raise HTTPException(status_code=400, detail=str(e))
             else:
                 try:
-                    value2 = datetime.fromisoformat(value2.replace('Z', '+00:00'))
+                    value2 = datetime.fromisoformat(value2.replace('Z', '+80:00'))
                 except ValueError:
                     raise HTTPException(status_code=400, detail=f"Invalid datetime format: {value2}")
-        
+        # print(f"condition: {condition}, value: {value}, value2: {value2}")
         # Apply filter based on operator
         if operator == "eq":
             query = query.filter(field_attr == value)
@@ -280,3 +281,4 @@ if __name__ == "__main__":
     debug = os.getenv("DEBUG", "false").lower() == "true"
     
     uvicorn.run("main:app", host=host, port=port, reload=debug)
+
