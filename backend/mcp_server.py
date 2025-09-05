@@ -13,12 +13,23 @@ mcp = FastMCP("Agent Messages Service")
 def add_chats(chats_data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Add multiple chat records to the database.
-    
-    Args:
-        chats_data: List of chat records with fields: session, question, answer, datetime, user, fullfill
-    
+
+    Parameters:
+        chats_data (List[Dict]): List of chat records, each with the following fields:
+            - session (str): Session ID
+            - question (str): User question
+            - answer (str): Agent answer
+            - datetime (str|datetime): ISO datetime string or datetime object
+            - user (str): Username
+            - fullfill (bool, optional): Whether fulfilled (default False)
+            - process_time (int, optional): Processing time in ms (default 0)
+
     Returns:
-        Dictionary with success status and count of added records
+        dict: {
+            success (bool): True if added successfully
+            message (str): Status message
+            count (int): Number of records added
+        }
     """
     try:
         db = next(get_db())
@@ -61,12 +72,21 @@ def add_chats(chats_data: List[Dict[str, Any]]) -> Dict[str, Any]:
 def search_chats(search_params: Dict[str, Any] = None) -> Dict[str, Any]:
     """
     Search chat records based on various criteria.
-    
-    Args:
-        search_params: Dictionary with search parameters like user, session, fullfill, etc.
-    
+
+    Parameters:
+        search_params (dict, optional): Search filters. Supported keys:
+            - user (str): Username
+            - session (str): Session ID
+            - fullfill (bool): Fulfillment status
+            - datetime_from (str|datetime): Start datetime (ISO string or datetime)
+            - datetime_to (str|datetime): End datetime (ISO string or datetime)
+
     Returns:
-        Dictionary with search results
+        dict: {
+            success (bool): True if search succeeded
+            count (int): Number of records found
+            data (list): List of chat records
+        }
     """
     try:
         db = next(get_db())
