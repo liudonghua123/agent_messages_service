@@ -12,11 +12,12 @@ DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./chats.db")
 
 if DATABASE_TYPE == "mysql":
+    from urllib.parse import quote_plus
     MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
     MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
-    MYSQL_USER = os.getenv("MYSQL_USER", "root")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
-    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "agent_messages")
+    MYSQL_USER = quote_plus(os.getenv("MYSQL_USER", "root"))
+    MYSQL_PASSWORD = quote_plus(os.getenv("MYSQL_PASSWORD", "password"))
+    MYSQL_DATABASE = quote_plus(os.getenv("MYSQL_DATABASE", "agent_messages"))
     DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
 
 engine = create_engine(DATABASE_URL, echo=os.getenv("DEBUG", "false").lower() == "true")
